@@ -1,0 +1,52 @@
+// ================================================================================================
+//  CHAPTER 1 · BIJLI BACHAO  ("Save electricity!")
+//  Giver: Asha Ma'am (school teacher)
+//  Teaches: saving electricity and water, planting trees, sorting waste. Wasting gives negative points.
+//
+//  Flow: m1_asha (start) → world objects in mohalla.txt (obj_light, obj_tap, obj_sapling, obj_garbage)
+//        → m1_asha again (progress / report) → m1_done
+// ================================================================================================
+
+=== m1_asha ===
+{m1_started: -> m1_progress}
+Asha Ma'am: Arre, tum naye ho na? {player_name}! Welcome to Shanti Nagar. Main Asha, yahan ke school mein science padhati hoon.
+Asha Ma'am: Ek problem hai. Is mahine school ka bijli ka bill ₹18,000 aaya! Khaali classrooms mein pankhe chalte hain, nal tapakte rehte hain.
+Asha Ma'am: Aur Gulmohar Park? Wahan paudhon ki jagah kachra uga hua hai.
+* [Main madad karunga! Batao kya karna hai.] #civic:+5 #why:Civic sense starts with "this is mine too". When one person steps up, others follow. That's how every mohalla changes.
+    You: Main madad karunga! Batao kya karna hai.
+    Asha Ma'am: Wah! Yahi spirit chahiye.
+* [Bill toh school bharega, mujhe kya?] #civic:-5 #why:School bills are paid with public money, everyone's taxes. Money wasted on electricity is money that could have bought books, fans or a water cooler.
+    You: Bill toh school bharega... mujhe kya?
+    Asha Ma'am: School humara hai, beta. Uska paisa humare tax ka paisa hai. Ek baar try karke dekho, maza aayega.
+* [Kya mujhe iske paise milenge?] #honesty:+1 #civic:-1 #why:Asking is fair! But some of the most valuable work, like helping your neighbourhood, pays in respect, skills and a better place to live, not cash.
+    You: Kya mujhe iske paise milenge?
+    Asha Ma'am: Haha, paise nahi. Par ek saaf mohalla, aur meri special recommendation letter! Deal?
+- Asha Ma'am: Toh suno. Mohalla mein <b>4 bekaar jalti lights ya pankhe</b> band karo, <b>3 tapakte nal</b> theek karo.
+Asha Ma'am: Gulmohar Park mein <b>3 paudhe</b> lagao. Aur <b>2 kachre ke dher</b> saaf karo, kachra alag-alag dabbon mein: gila, sukha, khatarnak.
+Asha Ma'am: Chamakti bulb dekho toh samajh jaana: wahi waste hai.
+~ m1_started = 1
+Pintu: Psst! Pintu here. Phone mein "Missions" app sab yaad rakhega. Aur atak jao toh H dabao!
+-> END
+
+=== m1_progress ===
+{lights_off >= 4 and taps_closed >= 3 and saplings >= 3 and piles_cleaned >= 2: -> m1_report}
+Asha Ma'am: Kaisa chal raha hai? Lights {lights_off}/4, nal {taps_closed}/3, paudhe {saplings}/3, kachra {piles_cleaned}/2.
+Asha Ma'am: {~Chhoti aadatein, bada farak!|Ek bulb bhi bachaya toh power plant ka kaam kam hua.|Paani ki har boond keemti hai.|Paudhe lagana aasaan hai; unhe paani dena asli kaam hai.}
+-> END
+
+=== m1_report ===
+Asha Ma'am: {player_name}! Maine dekha: lights off, nal band, paudhe lag gaye, park saaf! Bachche keh rahe the "Naya bhaiya superhero hai".
+Asha Ma'am: Kal school assembly mein tumhe do minute milenge. Bachchon ko kya sikhaoge?
+* [Rule: "Last one out, switch off!"] #civic:+5 #green:+3 #why:Simple, repeatable habits beat long lectures. When a habit has a catchy name, kids remind adults too!
+    You: Ek simple rule: "Last one out, switch off!" Jo class se aakhri nikle, woh switch band kare.
+    Asha Ma'am: Perfect! Chhota rule, bada asar.
+* [Jo bijli waste kare, uska fine lagao!] #civic:+1 #why:Rules and fines can help, but people change faster when they understand why. Fines alone make people sneaky, not sensible.
+    You: Jo bijli waste kare, uspe fine lagao!
+    Asha Ma'am: Hmm, fine se dar aata hai, samajh nahi. Pehle samjhaate hain, theek hai?
+* [Mujhe kya, maine toh apna kaam kar diya.] #civic:-3 #why:Doing it once is great; teaching others multiplies it. One person saving power saves a little. A whole school saving power saves a lot.
+    You: Maine apna kaam kar diya, baaki unki marzi.
+    Asha Ma'am: Kaam achha kiya, par sikhaoge toh kaam sau guna hoga. Soch lena.
+- Asha Ma'am: Thank you, {player_name}. Is mahine ka bill dekhna, pakka kam aayega.
+~ m1_done = 1
+Pintu: Achievement unlocked: "Bijli Bachao Champion"! Waise... mujhe park mein kuch gadbad dikhi. Mujhse milo, Main Road pe park ke gate ke paas.
+-> END

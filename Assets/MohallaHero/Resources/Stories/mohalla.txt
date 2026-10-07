@@ -1,0 +1,321 @@
+// ================================================================================================
+//  MOHALLA HERO: CHOICES THAT COUNT  ·  main story file (Ink)
+//
+//  Written in inkle's Ink language. The game runs it with its built-in InkLite reader
+//  (Scripts/Story/InkLite.cs); the same files also work with the official ink-unity-integration.
+//
+//  Conventions
+//    Speaker: line             → who is talking ("You" is the player)
+//    #civic:+5 #green:-3       → karma change when a choice is picked (civic, green, courage, honesty)
+//    #trust:+15                → trust change for the person you are talking to
+//    #why:...                  → the "Why it matters" card shown after the choice
+//    #violence                 → an act of violence/vandalism (heavy rating penalty)
+//
+//  Talking to a character runs the knot  npc_<id>  below, which sends you to the right chapter.
+//  Using a world object runs  obj_<kind>  (lights, taps, saplings, garbage, home) or the knot named by the object.
+// ================================================================================================
+
+INCLUDE m1_bijli_bachao.txt
+INCLUDE m2_bully_buster.txt
+INCLUDE m3_imandar_bazaar.txt
+INCLUDE m4_sach_ki_awaaz.txt
+INCLUDE m5_shanti_march.txt
+INCLUDE m6_election_mela.txt
+
+EXTERNAL has(item)
+EXTERNAL give(item)
+EXTERNAL take(item)
+EXTERNAL trust(person)
+EXTERNAL add_trust(person, amount)
+EXTERNAL joined()
+EXTERNAL karma(stat)
+EXTERNAL money()
+EXTERNAL pay(amount)
+EXTERNAL earn(amount)
+EXTERNAL day()
+EXTERNAL hour()
+EXTERNAL chapter()
+EXTERNAL rating()
+EXTERNAL resolve()
+EXTERNAL minigame(name)
+EXTERNAL unlock(area)
+EXTERNAL protest(action)
+EXTERNAL vote()
+EXTERNAL sleep()
+EXTERNAL save()
+
+VAR player_name = "Hero"
+VAR hint = ""
+VAR intro_done = 0
+VAR violence = 0
+
+// Chapter 1
+VAR m1_started = 0
+VAR m1_done = 0
+VAR lights_off = 0
+VAR taps_closed = 0
+VAR saplings = 0
+VAR piles_cleaned = 0
+// Chapter 2
+VAR m2_started = 0
+VAR m2_stopped = 0
+VAR m2_reported = 0
+VAR m2_supported = 0
+VAR m2_done = 0
+VAR m2_fought = 0
+// Chapter 3
+VAR m3_started = 0
+VAR m3_bought = 0
+VAR m3_lucky = 0
+VAR m3_ration = 0
+VAR m3_done = 0
+VAR m3_returned = 0
+VAR m3_kept = 0
+// Chapter 4
+VAR m4_started = 0
+VAR m4_done = 0
+VAR photo_fake = 0
+VAR rti_filed = 0
+VAR rti_day = 0
+VAR jugaad_warned = 0
+VAR took_bribe_netaji = 0
+// Chapter 5
+VAR m5_started = 0
+VAR m5_gathered = 0
+VAR placards = 0
+VAR march_checkpoints = 0
+VAR m5_done = 0
+// Chapter 6
+VAR m6_started = 0
+VAR m6_done = 0
+VAR stalls_visited = 0
+VAR seen_jugaad = 0
+VAR seen_vaada = 0
+VAR seen_meera = 0
+VAR mela_play = 0
+VAR rumours_checked = 0
+VAR voters_informed = 0
+VAR bribe_refused = 0
+VAR bribe_taken = 0
+VAR bribe_reported = 0
+
+// ================================================================================================
+//  INTRO
+// ================================================================================================
+
+=== intro ===
+Raju's auto-rickshaw rattles to a stop at the gate of Shanti Nagar. Your family has just moved into Gulmohar Apartments.
+Raju: Lo ji, Shanti Nagar aa gaya! Naam Shanti Nagar hai, par shanti kam, kachra zyada.
+Raju: Park mein garbage, school mein bijli waste, aur upar se Netaji ke vaade. Welcome!
+* [Kitna hua, bhaiya?]
+    You: Kitna hua, bhaiya?
+    Raju: Meter se ₹80. Aur haan, chhutta nahi hai toh UPI bhi chalega. Main honest auto-wala hoon!
+* [Mohalla itna bura bhi nahi lag raha...]
+    You: Mohalla itna bura bhi nahi lag raha...
+    Raju: Haha! Do din ruko, phir baat karenge.
+- A boy with a cap on backwards zooms up on a cycle and screeches to a halt.
+Pintu: Naya padosi detected! Hi, main Pintu. Mohalla ka official meme-maker aur hint-provider.
+Pintu: Rule No. 1: is mohalla mein har choice count hoti hai. Achha karo, mohalla chamakta hai. Bura karo... kachra hi kachra.
+Pintu: Upar dekho: four karma stats. Civic Sense, Green Score, Courage aur Honesty. Plus Mohalla Rating ke stars.
+Pintu: Phone (Tab ya phone button) mein missions, saboot aur sabka bharosa dikhega. Atak jao toh H dabao, Pintu hazir!
+* [Thanks Pintu! Pehle kahan jaun?]
+    You: Thanks Pintu! Pehle kahan jaun?
+    Pintu: Asha Ma'am! School ke bahar khadi hain, tumhari building ke east mein. Unke paas pehla mission hai.
+* [Meme-maker? Mera meme mat banana!]
+    You: Meme-maker? Mera meme mat banana!
+    Pintu: Promise nahi kar sakta. Ab jao, Asha Ma'am school ke bahar wait kar rahi hain!
+- ~ intro_done = 1
+-> END
+
+// ================================================================================================
+//  CHARACTERS: who says what, chapter by chapter
+// ================================================================================================
+
+=== npc_pintu ===
+{chapter() == 2 and not m2_started: -> m2_pintu}
+-> pintu_chat
+
+=== npc_chacha ===
+{chapter() == 4 and m4_started: -> m4_chacha}
+{chapter() == 6 and m6_started: -> m6_chacha}
+-> chacha_chat
+
+=== npc_jugaad ===
+{chapter() == 4 and m4_started and not jugaad_warned: -> m4_netaji}
+{chapter() == 6 and m6_started: -> stall_jugaad}
+-> netaji_chat
+
+=== npc_vaada ===
+{chapter() == 6 and m6_started: -> stall_vaada}
+-> vaada_chat
+
+=== npc_asha ===
+{chapter() == 1: -> m1_asha}
+{chapter() == 2 and m2_stopped and not m2_reported: -> m2_asha}
+{chapter() == 4 and m4_started: -> m4_asha}
+-> asha_chat
+
+=== npc_lala ===
+{chapter() == 3 and m3_started and not m3_bought: -> m3_lala}
+{chapter() == 4 and m4_started: -> m4_lala}
+-> lala_chat
+
+=== npc_sharma ===
+{chapter() == 3: -> m3_sharma}
+{chapter() == 4 and m4_started: -> m4_sharma}
+-> sharma_chat
+
+=== npc_raju ===
+{chapter() == 4 and m4_started: -> m4_raju}
+-> raju_chat
+
+=== npc_golu ===
+{chapter() == 2 and m2_started and not m2_stopped: -> m2_fight}
+{chapter() == 2 and m2_stopped and not m2_supported: -> m2_golu}
+-> golu_chat
+
+=== npc_bunty ===
+{chapter() == 2 and m2_started and not m2_stopped: -> m2_fight}
+{chapter() == 2 and m2_reported and m2_supported: -> m2_bunty}
+{chapter() == 4 and m4_started: -> m4_bunty}
+-> bunty_chat
+
+=== npc_fernandes ===
+{chapter() == 4 and m4_started: -> m4_fernandes}
+{chapter() == 5 and march_checkpoints >= 4: -> m5_fernandes}
+{chapter() == 6: -> m6_fernandes}
+-> fernandes_chat
+
+=== npc_meera ===
+{chapter() == 4: -> m4_meera}
+{chapter() == 5: -> m5_meera}
+{chapter() == 6 and m6_started: -> stall_meera}
+-> meera_chat
+
+// ================================================================================================
+//  EVERYDAY CHATS (when nobody has a mission for you)
+// ================================================================================================
+
+=== pintu_chat ===
+Pintu: {~Bhaiya, hint chahiye? Suno.|Pintu's Pro Tip, free of cost:|Main busy hoon meme banane mein, par tumhare liye time hai.}
+Pintu: {hint}
+Pintu: {rating() >= 60: Waise mohalla ab Insta-worthy lag raha hai. Respect!|Waise mohalla ki rating dekh ke mera meme bhi ro raha hai. Kuch karo!}
+-> END
+
+=== chacha_chat ===
+Chacha: {~Aao aao, cutting chai? Aaj ki taaza khabar: Netaji ke ghar mein swimming pool ban raha hai. Pakki khabar!|Suna kya? WhatsApp pe aaya hai ki paani ki tanki mein machhliyan ugne lagi hain!|Beta, main toh bas sunta hoon, aur thoda sa aage bhej deta hoon.}
+* [Chacha, yeh khabar kahan se aayi?]
+    You: Chacha, yeh khabar kahan se aayi?
+    Chacha: Arre... kisi group se. Kaunsa tha... yaad nahi. Par aayi hai toh sach hi hogi na?
+* [Ek cutting chai, please!]
+    You: Ek cutting chai, please!
+    Chacha: Yeh lo! Garam hai, aur meri khabron ki tarah, thodi masaledar.
+-> END
+
+=== netaji_chat ===
+Netaji: {~Namaskar namaskar! Mera vaada: har ghar mein helipad, har chhat pe swimming pool, aur chaand pe free WiFi!|Kaam? Kaam ki baat mat karo, vaade ki baat karo! Vaade mein dum hai!|Potholes? Woh toh speed breaker hain. Safety first!}
+* [Netaji, park kab theek hoga?]
+    You: Netaji, park kab theek hoga?
+    Netaji: Park? Ho gaya na theek! Board nahi dekha? "Renovation complete." Board kabhi jhooth bolta hai kya? Hehe.
+* [Namaste Netaji.]
+    You: Namaste Netaji.
+    Netaji: Jeete raho! Aur vote... humein hi dena. Hehe.
+-> END
+
+=== vaada_chat ===
+Dr. Vaada: {~Main is mudde pe bilkul saaf hoon: haan. Ya shayad nahi. Aapko kya lagta hai? Wahi.|Kal maine kaha tha park banayenge. Aaj kehta hoon parking banayenge. Kal ka pata nahi.|Main sabke saath hoon. Aur sabke khilaaf bhi. Balance zaroori hai.}
+-> END
+
+=== asha_chat ===
+Asha Ma'am: {~Bachche aaj kal "Last one out, switch off" khud bolte hain. Achha lagta hai.|Padhai sirf kitaab mein nahi hoti, {player_name}. Mohalla bhi ek classroom hai.|Tumhari wajah se school ka bijli bill kam aaya hai. Thank you!}
+-> END
+
+=== lala_chat ===
+Lala ji: {~Aao beta. Atta, dal, chawal, sab taaza hai. Aur hisaab bilkul saaf.|Is dukaan ko 40 saal ho gaye. Imaandari se chalti hai, isliye chalti hai.|Udhaar band hai, par muskaan free hai.}
+-> END
+
+=== sharma_chat ===
+Sharma Aunty: {~Beta, building ke WhatsApp group mein add ho jao. Pani ki timing wahi batate hain.|Tumhari mummy ne bataya tum bade samajhdaar ho. Dekhte hain!|Aaj kal ke bachche phone mein ghuse rehte hain. Tum alag ho, achha hai.}
+-> END
+
+=== raju_chat ===
+Raju: {~Meter se chalta hoon, dil se chalata hoon. Kahin jaana hai?|Is sadak ke gaddhe ginte ginte main math teacher ban jaata.|Shanti Nagar ka har rasta mujhe yaad hai. Har rumour bhi.}
+-> END
+
+=== golu_chat ===
+Golu: {~Maine ek naya comic banaya hai: "Captain Kachra-Saaf". Tum uske hero ho!|Thank you... sach mein. Ab main lunch akela nahi khaata.|Bunty ab theek hai. Kal usne meri drawing ki taareef ki!}
+-> END
+
+=== bunty_chat ===
+Bunty: {~Kya dekh rahe ho? ...Achha theek hai, hello.|Main ab cricket team mein hoon. Golu score likhta hai. Achhi team hai.|Kisi ko batana mat, par sorry bolna itna mushkil nahi tha.}
+-> END
+
+=== fernandes_chat ===
+Officer Fernandes: {~Ward Office, 9 to 6. Complaint ho toh form bhariye. Bina form ke toh main khud se bhi baat nahi karti.|RTI aapka haq hai. Right to Information. Bas sahi form, sahi fees.|Notice board padhte rahiye. Wahan sab kuch likha hota hai, afwaah nahi.}
+-> END
+
+=== meera_chat ===
+Meera Didi: {~BP check karwaana hai? Free hai. Mohalla healthy toh mohalla happy.|Main pichhle saal paani ki line ke liye petition le ke gayi thi. Tees din lage, par line aa gayi.|Badlaav dheere aata hai, par aata hai. Bas haath milake chalna padta hai.}
+-> END
+
+// ================================================================================================
+//  WORLD OBJECTS (always active: civic sense isn't only for missions)
+// ================================================================================================
+
+=== obj_light ===
+{~Ek khaali classroom mein tubelight jal rahi hai.|Din ke barah baje street light jal rahi hai!|Kamre mein koi nahi, par pankha full speed pe ghoom raha hai.}
++ [Switch off karo] #green:+4 #civic:+2 #why:A tubelight left on all year wastes about ₹1,000 of electricity, and most of our electricity still comes from burning coal. Switching off saves money AND air.
+    ~ resolve()
+    ~ lights_off += 1
+    You: {~Click! Done.|Off! Bijli bachi, paisa bacha.|Ab theek hai.}
++ [Chhodo, mera bill thodi hai] #green:-3 #civic:-2 #why:Public buildings are paid for with everyone's taxes. "It's not my bill" thinking is how crores of rupees of electricity are wasted every year.
+    You: Mera bill thodi hai...
+-> END
+
+=== obj_tap ===
+{~Nal se tap-tap paani beh raha hai. Koi dekh bhi nahi raha.|Public nal khula chhoda hua hai. Neeche keechad ho gaya hai.|Ek nal ka washer dheela hai, boond boond tapak raha hai.}
++ [Nal band karo, washer kas do] #green:+4 #civic:+2 #why:A dripping tap wastes up to 30 litres a day, enough drinking water for 10 people. Many families in the city still wait for water tankers.
+    ~ resolve()
+    ~ taps_closed += 1
+    You: {~Tight! Ek bhi boond nahi.|Ho gaya. Paani bachao, kal ke liye.|Band!}
++ [Koi aur band kar dega] #green:-3 #civic:-2 #why:"Someone else will do it" is the bystander effect: when everyone waits for someone else, nobody acts. Be the someone.
+    You: Koi aur band kar dega...
+-> END
+
+=== obj_sapling ===
+Yahan ek gaddha khoda hua hai, aur paas mein ek chhota neem ka paudha rakha hai. Watering can bhi hai.
++ [Paudha lagao aur paani do] #green:+5 #civic:+1 #why:A neem tree cools the air around it, cleans dust and gives shade for 100+ years. Planting is easy; watering it for the first months is the real commitment.
+    ~ resolve()
+    ~ saplings += 1
+    You: {~Lag gaya! Bada hoke chhaya dena, dost.|Neem lagaya, hawa saaf karayega.|Ek aur paudha, ek aur saans.}
++ [Baad mein]
+    You: Baad mein karta hoon.
+-> END
+
+=== obj_garbage ===
+{~Plastic, chai ke cup, kele ke chhilke, aur ek purani battery: sab ek dher mein.|Kachre ka ek bada dher. Kutte aur makkhiyan party kar rahe hain.|Kisi ne raat mein yahan kachra phenk diya hai.}
++ [Saaf karo aur kachra alag-alag karo] #civic:+3 #why:Mixed garbage goes to a landfill and burns for years. Sorted waste gets composted (wet), recycled (dry) or safely handled (hazardous).
+    ~ resolve()
+    ~ piles_cleaned += 1
+    ~ minigame("waste")
++ [Aag laga do, jaldi khatam] #green:-8 #civic:-4 #why:Burning garbage releases toxic smoke (dioxins) that harms lungs, especially children's. It is also illegal in most cities.
+    You: Aag laga deta hoon, jhanjhat khatam...
+    Pintu: BHAIYA NO! Dhuan pura mohalla saans mein lega! Rehne do, Municipality ko bulate hain.
++ [Ignore karo]
+    You: Mera kachra thodi hai.
+-> END
+
+=== obj_home ===
+Gulmohar Apartments, Flat 3B: tumhara naya ghar. {~Mummy ne aloo paratha banaya hai.|Balcony se poora mohalla dikhta hai.|Ghar jaisa sukoon kahin nahi.}
++ [Aaram karo, kal subah tak (game saves)]
+    ~ sleep()
++ [Game save karo]
+    ~ save()
++ [Bahar jao]
+-> END
+
+=== obj_notice ===
+Ward 7 Notice Board.
+{chapter() <= 4: "RTI: Get information about how public money is spent. Form at the counter, fee ₹10. Reply within 30 days." | "WARD ELECTION: Polling at the Mela Maidan booth. Bring an approved photo ID. Bribery is a crime: report it to the Election Officer."}
+Ek kone mein kisi ne chipka diya hai: "Netaji Jugaad Singh: Chaand pe WiFi, ghar ghar helipad!"
+-> END

@@ -1,0 +1,108 @@
+// ================================================================================================
+//  CHAPTER 2 · BULLY BUSTER
+//  Giver: Pintu
+//  Teaches: stop bullying safely (no fighting), get a trusted adult, report it, support the victim,
+//           and give the bully a way to change.
+//
+//  Flow: m2_pintu → m2_fight (Golu or Bunty in the park) → m2_asha (report) → m2_golu (support)
+//        → m2_bunty → m2_done
+// ================================================================================================
+
+=== m2_pintu ===
+Pintu: Bhaiya, emergency! Meme nahi, sach mein emergency.
+Pintu: Bunty roz Golu ko park mein pareshan karta hai. Uska tiffin chheen leta hai, drawings phaad deta hai. Aaj bhi wahi ho raha hai, park ke upar-left kone mein.
+Pintu: Main chhota hoon, Bunty mujhse bada hai. Tum chaloge?
+* [Haan, abhi chalte hain. Par ladai nahi karenge.] #courage:+5 #civic:+2 #why:Bystanders are powerful: most bullying stops within seconds when someone steps in calmly. Saying "no fighting" upfront keeps everyone safe.
+    You: Haan, abhi chalte hain. Par ladai nahi karenge, samjhe?
+    Pintu: Deal! Calm mode ON.
+* [Bachchon ka jhagda hai, apne aap theek ho jayega.] #courage:-4 #civic:-2 #why:Bullying rarely stops on its own. It usually gets worse when nobody reacts, because the bully learns nobody will.
+    You: Bachchon ka jhagda hai, khud theek ho jayega.
+    Pintu: Roz ho raha hai, bhaiya. Roz. Golu ab school jaane se darta hai.
+    You: ...theek hai. Chalo, dekhte hain.
+- ~ m2_started = 1
+Pintu: Park ke upar-left kone mein. Jaldi!
+-> END
+
+=== m2_fight ===
+In the corner of Gulmohar Park, Bunty is holding Golu's drawing book high above his head. Golu is close to tears.
+Bunty: Arre Golu-polu, yeh kya bakwaas drawing hai? Superhero? Tu? Hahaha! Phaad doon?
+Golu: Please wapas de do... meri mummy ne woh notebook di thi...
+* [Beech mein khade ho jao, calmly: "Bunty, book wapas karo."] #courage:+8 #civic:+3 #why:Calm, firm words and your body between them (without touching anyone) is the safest way to interrupt bullying. You took away the audience the bully wanted.
+    You: Bunty. Book wapas karo. Yeh mazaak nahi hai, aur tum yeh jaante ho.
+    Bunty: Tu kaun hai be? ...Achha theek hai, le. Boring log.
+    Bunty throws the notebook on the bench and stomps off.
+    ~ m2_stopped = 1
+* [Zor se Asha Ma'am ko awaaz do / kisi bade ko bulao] #courage:+4 #civic:+5 #why:Getting a trusted adult is not "snitching", it's smart. Adults can stop it AND fix it later. Your safety matters too.
+    You: ASHA MA'AM! Yahan aaiye, park mein!
+    Bunty: Arre, teacher! Bhaago!
+    Bunty drops the notebook and runs. Golu picks it up, shaking.
+    ~ m2_stopped = 1
+* [Usse dhakka do: "Ruk ja, nahi toh maarunga!"] #courage:+2 #civic:-8 #why:Fighting turns one bully into two fighters. Someone gets hurt, both get punished, and the bully gets an excuse to come back angrier. Stop it without violence.
+    You push Bunty hard. He stumbles, falls on the gravel and scrapes his knee.
+    Bunty: Aaah! Tu... tujhe dekh lunga! Main sabko bataunga tune maara!
+    Bunty limps away with a bleeding knee. Golu looks even more scared now.
+    ~ m2_fought = 1
+    ~ m2_stopped = 1
+* [Phone nikaalo, video banao: meme material!] #civic:-5 #honesty:-2 #why:Filming someone being bullied and sharing it humiliates them again, in front of everyone, forever. Never record to laugh. If you record, do it only as evidence for an adult.
+    You: Ruko, video bana leta hoon! Viral hoga!
+    Pintu: Bhaiya?! Yeh meme nahi hai! Golu ro raha hai!
+    Bunty: Haha, dekho, tera bhi video ban raha hai Golu!
+    You feel terrible. You put the phone away. Bunty is still holding the book...
+-> END
+
+=== m2_asha ===
+Asha Ma'am: {player_name}? Tum pareshan lag rahe ho. Kya hua?
+* [Sab sach-sach batao, jo dekha wahi] #honesty:+5 #civic:+5 #why:Reporting exactly what you saw, no more, no less, helps adults act fairly. True reports get taken seriously.
+    You: Ma'am, Bunty roz Golu ka tiffin chheenta hai aur drawings phaadta hai. Aaj park mein bhi yahi ho raha tha.
+    {m2_fought: You: Aur... maine Bunty ko dhakka de diya. Galti thi. Woh gir gaya.}
+    Asha Ma'am: Tumne sach bataya, yeh bahut badi baat hai. Main dono ke parents se baat karungi.
+* [Thoda badha-chadha ke: "Bunty ne Golu ko bahut maara!"] #honesty:-5 #civic:+2 #why:Exaggerating feels like it helps, but when adults find out the details were wrong, they start doubting the whole story, and the victim pays the price.
+    You: Ma'am, Bunty ne Golu ko bahut buri tarah maara! Khoon nikal aaya!
+    Asha Ma'am: Khoon? Main abhi Golu se milti hoon...
+    Asha Ma'am: Golu keh raha hai maara nahi, bas book chheeni. {player_name}, sach bolna zaroori hai, warna log asli baat pe bhi shak karte hain.
+* [Kuch nahi Ma'am, bas mazaak chal raha tha.] #courage:-3 #civic:-3 #why:Calling bullying "just a joke" protects the bully, not the victim. If it's a joke, everyone is laughing. Was Golu laughing?
+    You: Kuch nahi Ma'am. Bas bachchon ka mazaak tha.
+    Asha Ma'am: Achha? Theek hai... par kuch ho toh mujhe zaroor batana.
+    Pintu: (whispering) Bhaiya... Golu ke liye. Please.
+    -> END
+- Asha Ma'am: Hum school mein ek "Dost Circle" shuru karenge: jahan bachche bina dare baat kar sakein. Aur Bunty se bhi baat hogi, usse bhi samajhna padega.
+~ m2_reported = 1
+Asha Ma'am: Ab Golu ke paas jao. Use ek dost ki zaroorat hai, hero ki nahi.
+-> END
+
+=== m2_golu ===
+Golu is sitting alone, holding his crumpled notebook.
+Golu: Thank you... Par kal phir hoga. Hamesha hota hai.
+* ["Lunch saath karein? Mujhe apni comics dikhao!"] #civic:+4 #courage:+2 #trust:+20 #why:Victims of bullying often feel alone. A friend at lunch makes them far less likely to be targeted, and far more likely to speak up.
+    You: Kal se lunch saath karte hain. Aur mujhe tumhari comics dikhao, superhero wali!
+    Golu: Sach mein? Maine ek comic banaya hai... "Captain Kachra-Saaf"! Tum pe based hai!
+* ["Tum bhi thoda strong bano yaar, bolo kuch!"] #civic:-3 #why:Telling a victim to "be stronger" makes it sound like the bullying is their fault. It never is. Support first; confidence grows from feeling safe.
+    You: Tum bhi kuch bola karo yaar. Thoda strong bano.
+    Golu: ...Main koshish karta hoon. Par mujhe darr lagta hai.
+    You: Sorry, Golu. Darrna galat nahi hai. Main saath hoon.
+* ["Kal se main tumhare saath school chalunga."] #courage:+3 #civic:+2 #trust:+15 #why:Showing up is support. Bullies pick on people who seem alone; a companion changes that.
+    You: Kal se school saath chalenge. Dekhte hain koi kya karta hai.
+    Golu: Okay! Main subah 8 baje gate pe milunga.
+- ~ m2_supported = 1
+Golu: Waise... Bunty itna bura bhi nahi hai. Uske ghar mein roz jhagde hote hain. Pintu ne bataya.
+-> END
+
+=== m2_bunty ===
+Bunty is kicking a stone near the park bench. He sees you and scowls.
+Bunty: Kya hai? Ab tu bhi lecture dega? Asha Ma'am ne already mere papa ko phone kar diya.
+{m2_fought: Bunty: Aur mera ghutna abhi bhi dukh raha hai. Thanks a lot.}
+* [Baith jao. "Tum aisa kyun karte ho?" Sach mein suno.] #civic:+5 #courage:+3 #trust:+20 #why:Many children who bully are dealing with something painful themselves. Listening doesn't excuse bullying, but it's often the start of stopping it for good.
+    You: Lecture nahi. Bas pooch raha hoon: tum aisa kyun karte ho?
+    Bunty: ...Ghar pe sab chillaate rehte hain. Yahan aake... main chillaata hoon. Pata nahi kyun.
+    You: Golu se maafi maangoge? Aur park mein cricket? Golu score badhiya likhta hai.
+    Bunty: ...Theek hai. Par agar tune kisi ko bataya ki main roya, toh...
+    You: Kaun roya? Main toh sirf cricket ki baat kar raha tha.
+* ["Tum bure insaan ho, Bunty."] #civic:-3 #trust:-10 #why:Labelling someone "bad" gives them nothing to change into. Name the behaviour ("snatching books is wrong") and leave room for the person to do better.
+    You: Tum bure insaan ho, Bunty. Bas.
+    Bunty: Haan, sab yahi kehte hain. Toh phir main bura hi sahi.
+* ["Agli baar kiya toh seedha Principal ke paas."] #civic:+1 #courage:+1 #why:Clear consequences are fair and useful, but threats alone rarely change why someone behaves badly.
+    You: Agli baar kisi ko pareshan kiya, toh seedha Principal ke paas jaunga.
+    Bunty: Haan haan, pata hai. Ja.
+- ~ m2_done = 1
+Pintu: Chapter complete: "Bully Buster"! Waise, Sharma Aunty tumhe dhoondh rahi thi. Building ke bahar.
+-> END
