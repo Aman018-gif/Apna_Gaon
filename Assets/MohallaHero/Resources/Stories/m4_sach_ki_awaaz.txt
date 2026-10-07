@@ -1,0 +1,352 @@
+// ================================================================================================
+//  CHAPTER 4 · SACH KI AWAAZ  ("The voice of truth")
+//  Giver: Meera Didi
+//  Teaches: fight corruption with evidence (photo, bill, RTI), then persuade people honestly.
+//  Each resident has a trust value (0-100). Honest arguments raise it, lies and threats lower it.
+//  Residents with trust >= 60 join the march; 4 are needed.
+//
+//  Flow: m4_meera (start) → park_board (photo) → m4_lala or raddi_pile (receipt)
+//        → m4_fernandes (RTI, reply next day) → m4_<person> (convince) → m4_meera (ready) → m4_done
+// ================================================================================================
+
+// Which evidence each resident has already seen (hides "Saboot dikhao" once nothing new is left)
+VAR shown_sharma_photo = 0
+VAR shown_sharma_receipt = 0
+VAR shown_raju_photo = 0
+VAR shown_raju_receipt = 0
+VAR shown_raju_rti = 0
+VAR shown_lala_rti = 0
+VAR shown_lala_photo = 0
+VAR shown_chacha_receipt = 0
+VAR shown_chacha_rti = 0
+VAR shown_asha_photo = 0
+VAR shown_asha_rti = 0
+
+=== m4_meera ===
+{m4_started: -> m4_meera_check}
+Meera Didi: {player_name}, aao. Pintu ne tumhare baare mein bahut kuch bataya hai. Mujhe tumhari madad chahiye.
+Meera Didi: Gulmohar Park ke renovation ke liye ₹10 lakh aaye the. Board pe likha hai "Renovation complete". Tumne park dekha hai?
+Meera Didi: Toote jhoole, sukha talaab, kachre ka dher. Paisa kahan gaya? Mujhe shak hai Netaji Jugaad Singh pe.
+* [Chalo, abhi Netaji ke ghar ke bahar dharna dete hain!] #courage:+2 #civic:-1 #why:Anger without evidence is easy to dismiss ("they're just troublemakers"). Facts first, then action: that order is what makes protests work.
+    You: Chalo, abhi Netaji ke ghar ke bahar dharna dete hain!
+    Meera Didi: Josh achha hai! Par bina saboot ke hum sirf shor machayenge, aur Netaji kahega "afwaah hai". Pehle saboot.
+* [Pehle saboot jama karte hain. Kya chahiye?] #civic:+4 #why:Evidence turns an opinion into a case. Photos, documents and official records are much harder to deny than "everyone says so".
+    You: Pehle saboot jama karte hain. Kya kya chahiye?
+    Meera Didi: Samajhdaar! Bilkul sahi soch.
+* [Social media pe post kar dete hain: "Netaji chor hai!"] #honesty:-4 #civic:-2 #why:Calling someone a thief online without proof is defamation, and it turns your cause into a rumour. If you're wrong, you hurt an innocent person; if you're right, you've warned the guilty one.
+    You: Main post kar deta hoon: "Netaji chor hai, share karo!"
+    Meera Didi: Nahi! Bina saboot ke ilzaam lagana bhi galat hai, aur Netaji ko bachne ka mauka milega. Pehle facts.
+- Meera Didi: Teen cheezein chahiye. Ek: park ke board ki <b>photo</b>, jo dikhaye ki kaam hua hi nahi.
+Meera Didi: Do: <b>bill</b>, jisme paisa kharch hua dikhaya gaya. Supplier se poocho, ya... dhoondho.
+Meera Didi: Teen: Ward Office mein <b>RTI</b> file karo. Right to Information: sarkaar ko batana padta hai paisa kahan gaya.
+Meera Didi: Aur phir: logon ko saath lao. Kam se kam 4 log. Sach bolke, darakar ya jhooth bolke nahi.
+~ m4_started = 1
+-> END
+
+=== m4_meera_check ===
+{has("photo") and has("receipt") and has("rti") and joined() >= 4: -> m4_meera_ready}
+Meera Didi: Kaisi chal rahi hai jaanch?
+Meera Didi: Photo: {has("photo"): mil gayi|abhi nahi}. Bill: {has("receipt"): mil gaya|abhi nahi}. RTI reply: {has("rti"): aa gaya|{rti_filed: file ho gaya, reply ka wait|file nahi hua}}. Saath mein log: {joined()}/4.
+Meera Didi: {~Ek ek karke, {player_name}. Sach jaldi mein nahi, poore saboot ke saath jeet-ta hai.|Logon se baat karte waqt saboot dikhana. Bas.|Tumhe pata hai, RTI ek aam nagrik ka sabse bada hathiyar hai.}
+-> END
+
+=== m4_meera_ready ===
+Meera Didi: Photo, bill, RTI reply... aur {joined()} log saath! {player_name}, tumne kamaal kar diya.
+Meera Didi: Ab hum ek <b>shanti march</b> karenge: placards, naare, candle march, aur aakhir mein petition Officer Fernandes ko.
+Meera Didi: Ek baat yaad rakhna: na tod-phod, na gaali, na hinsa. Ek bhi patthar chala toh hamari saari mehnat bekaar.
+* [Promise. Shanti se, sach ke saath.] #civic:+3 #courage:+2 #why:Peaceful protest is a constitutional right in India: to assemble peacefully, without arms. Violence takes that protection away and turns supporters into opponents.
+    You: Promise. Shanti se, sach ke saath.
+* [Agar Netaji ke log ladne aaye toh?] #courage:+2 #why:Planning for trouble is smart. Peaceful movements decide in advance: don't react, step back, call the police and document everything.
+    You: Agar Netaji ke log ladne aaye toh?
+    Meera Didi: Toh hum peeche hatenge, video banayenge aur police ko call karenge. Jawab dene se humara sach kamzor hota hai.
+- ~ m4_done = 1
+~ m5_started = 1
+Meera Didi: Pehla kaam: Community Hall ke bahar table pe <b>3 placards</b> banao. Phir park mein milte hain.
+-> END
+
+// ------------------------------------------------------------------------------------- evidence
+
+=== park_board ===
+A big shiny board stands at the park gate: "GULMOHAR PARK RENOVATION. Cost: ₹10,00,000. Status: COMPLETE. By order of Netaji Jugaad Singh."
+Behind it: broken swings, a dry pond and a garbage heap that has its own ecosystem.
+{not m4_started: Pintu ne iska meme already bana diya hai: "Expectation vs Reality". -> END}
+{has("photo"): Photo already tumhare phone mein hai. -> END}
+* [Photo lo: board aur peeche ka park, ek frame mein] #civic:+3 #honesty:+2 #why:A clear, unedited, time-stamped photo is strong evidence. The board's own words ("complete") next to the broken park say everything.
+    You: Click! Board bhi, park bhi, ek hi photo mein. Time aur date ke saath.
+    ~ give("photo")
+* [Photo lo, aur app se thoda aur kachra "add" kar do, impact ke liye] #honesty:-10 #why:Edited evidence is fake evidence. If anyone notices (and people do), your real case collapses with it.
+    You: Thoda aur kachra add karta hoon... ab lag raha hai na scam!
+    Pintu: Bhaiya... yeh toh photoshop hai. Log pakad lenge.
+    ~ give("photo")
+    ~ photo_fake = 1
+-> END
+
+=== raddi_pile ===
+{not m4_started: A pile of old papers and posters behind Netaji's office. Smells like old chai. -> END}
+{has("receipt"): Bas purane posters bache hain. -> END}
+A pile of torn posters and papers behind the party office, waiting for the raddiwala.
+* [Raddi mein dhoondho] #courage:+3 #why:Documents that are thrown away in public can be legitimate leads. Note where and when you found them so others can verify.
+    You dig through old posters ("Chaand pe WiFi!") and find a crumpled bill: "Jugaad Supply Co.: 500 gold-plated dustbins, ₹9,50,000. Delivered to Gulmohar Park."
+    You: Paanch sau golden dustbin? Park mein toh do toote dabbe hain!
+    ~ give("receipt")
+* [Rehne do, kisi ka kachra kyun chhedna]
+    You: Rehne do.
+-> END
+
+=== m4_lala ===
+{has("receipt"): -> m4_lala_convince}
+Lala ji: {player_name}, kya chahiye beta?
+* [Lala ji, park ka saamaan aapki dukaan se gaya tha? Bill hai?]
+    You: Lala ji, sunne mein aaya park ka saamaan aapke through gaya. Koi bill hai?
+    {m3_returned: -> m4_lala_gives}
+    Lala ji: Main kuch nahi jaanta! Mujhe is jhanjhat mein mat daalo. Jao.
+    Pintu: (whisper) Lala ji darte hain. Shayad tumpe bharosa nahi. Netaji ke office ke peeche raddi ka dher hai...
+* [Kuch nahi, bas namaste.]
+-> END
+
+=== m4_lala_gives ===
+Lala ji: Tum... wahi ho na jisne ₹100 lautaye the. Tum pe bharosa hai.
+Lala ji: Sach yeh hai: Netaji ke aadmi ne mujhse ek khaali bill pe sign karwaya. Baad mein usme likh diya "500 golden dustbin". Main dar gaya tha.
+Lala ji: Yeh lo, uski copy. Aur haan, main tumhare saath hoon.
+~ give("receipt")
+~ add_trust("lala", 25)
+-> END
+
+=== m4_lala_convince ===
+{trust("lala") >= 60: Lala ji: Main saath hoon, beta. March mein dukaan band rakhunga. -> END}
+Lala ji: Bill toh tumhare paas hai. Par main ek chhota dukaandaar hoon. Netaji naraz hua toh?
++ {(has("rti") and not shown_lala_rti) or (has("photo") and not photo_fake and not shown_lala_photo)} [Saboot dikhao] -> m4_lala_show
+* [Samjhao: "Aap akele nahi honge. Poora mohalla saath hoga."] #trust:+10 #courage:+2 #why:Fear of standing alone stops most people. Showing them they're part of a group is honest and powerful.
+    You: Aap akele nahi honge, Lala ji. Sab saath honge, aur sab kuch kanoon ke hisaab se.
+* [Dhamki do: "Saath nahi diya toh sabko bataunga aapne fake bill sign kiya"] #trust:-20 #honesty:-5 #courage:-2 #why:Blackmail is a crime, and it turns allies into enemies. Pressure might get a "yes", but never real support.
+    You: Saath nahi diya, toh sabko bataunga ki aapne fake bill sign kiya tha.
+    Lala ji: Tum bhi Netaji jaise nikle! Niklo meri dukaan se.
++ [Phir se, shanti se samjhao (sach ke saath)] #trust:+5 #why:Persuasion takes patience. Calmly repeating the facts, without pressure or exaggeration, slowly builds trust, even after a bad start.
+    You: Ek baar phir, seedhi baat: park ka paisa gaya kahan? Bas itna jaanna hai, shanti se aur kanoon ke saath.
+- -> m4_lala_verdict
+
+=== m4_lala_show ===
+* {has("rti")} [RTI reply dikhao: sarkaar ke apne records] #trust:+20 #why:Official records protect ordinary people: it's not your word against a neta's, it's the government's own data.
+    ~ shown_lala_rti = 1
+    You: Yeh dekhiye: RTI reply. Sarkaar ke apne records kehte hain ₹10 lakh park pe kharch hue.
+    Lala ji: Sarkaari kaagaz... matlab yeh sirf meri baat nahi rahi. Yeh sach hai.
+* {has("photo") and not photo_fake} [Park ki photo dikhao] #trust:+10
+    ~ shown_lala_photo = 1
+    You: Yeh park ki aaj ki photo hai. Board aur haalat dono.
+    Lala ji: Haan... mere pote yahin khelte the.
+- -> m4_lala_verdict
+
+=== m4_lala_verdict ===
+{trust("lala") >= 60: Lala ji: Theek hai. Main saath hoon!|Lala ji: Abhi bhi dar lagta hai... sochta hoon.}
+-> END
+
+=== m4_fernandes ===
+{has("rti"): -> m4_fernandes_after}
+{rti_filed: -> m4_fernandes_wait}
+Officer Fernandes: Ward Office. Form bhariye, line mein aaiye. Kya kaam hai?
+* [RTI file karni hai: park ke ₹10 lakh ka hisaab chahiye. (Fee ₹10)] #civic:+5 #why:The Right to Information Act (2005) lets any citizen ask how public money was spent. Officials must reply within 30 days. It costs just ₹10.
+    ~ pay(10)
+    You: Mujhe RTI file karni hai: Gulmohar Park ke ₹10 lakh kahan kharch hue, bill, contractor, sab.
+    Officer Fernandes: Sahi form, sahi fees, sahi sawaal. Waah. Reply aane mein 30 din lagte hain...
+    Pintu: (whisper) Game mein 30 din = 1 din. Ghar jaake so jao, kal aana!
+    Officer Fernandes: ...par aapki kismat achhi hai, file pehle se khuli hai. Kal tak reply mil jayega.
+    ~ rti_filed = 1
+    ~ rti_day = day()
+* [Officer ji, ₹500 le lijiye, aaj hi de dijiye na] #honesty:-10 #civic:-5 #why:Offering a bribe, even to speed things up, is a crime, and it's exactly the corruption you're fighting. An honest officer will refuse; a dishonest one will remember you.
+    You: Officer ji, ₹500 rakh lijiye, aaj hi reply de dijiye na?
+    Officer Fernandes: Kya kaha? Rishwat? Mere office mein? Yeh form bhariye aur ₹10 ki fees dijiye. Agli baar seedha complaint hogi.
+    You: Sorry... yeh lijiye ₹10.
+    ~ pay(10)
+    ~ rti_filed = 1
+    ~ rti_day = day()
+* [Notice board dekhta hoon pehle]
+    You: Pehle notice board padh leta hoon.
+-> END
+
+=== m4_fernandes_wait ===
+{day() > rti_day: -> m4_fernandes_reply}
+Officer Fernandes: Aapki RTI process mein hai. Kal aaiye. Aur haan: ghar jaake aaram bhi kar lijiye.
+-> END
+
+=== m4_fernandes_reply ===
+Officer Fernandes: Aapka RTI reply. File number WO/RTI/112.
+Officer Fernandes: ₹10,00,000 released in March. Contractor: Jugaad Supply Co. Status: "Complete".
+~ give("rti")
+* [Lekin park toh toota hua hai! Yeh galat hai.] #courage:+2
+    You: Lekin park toh toota hua hai! Yeh record galat hai.
+    Officer Fernandes: Toh complaint likhiye, saboot ke saath, aur logon ke signatures ke saath. Main personally dekhungi.
+* [Thank you, officer.] #civic:+1
+    You: Thank you, Officer.
+    Officer Fernandes: Yeh mera kaam hai. Aapka kaam: is jaankaari ka sahi istemaal.
+-> END
+
+=== m4_fernandes_after ===
+Officer Fernandes: RTI reply mil gaya na? Ab petition ke saath aaiye. Signatures, saboot, aur sabse zaroori: shanti.
+-> END
+
+// ------------------------------------------------------------------------------------- Netaji
+
+=== m4_netaji ===
+~ jugaad_warned = 1
+Netaji: Arre arre arre, {player_name}! Suna hai tum mere baare mein "research" kar rahe ho? Hehe.
+Netaji: Dekho beta, jawaan ho, smart ho. Mere saath aa jao. ₹5,000 abhi, aur "Yuva Neta" ka post. Bas yeh jaanch-vaanch band.
+* [Mana karo: "Sach bikta nahi, Netaji."] #courage:+8 #honesty:+5 #why:Refusing a bribe from a powerful person takes real courage. Every refusal makes the next one easier, for you and for everyone watching.
+    You: Sach bikta nahi, Netaji. Park ka paisa wapas laana hai.
+    Netaji: Hmm. Zid hai. Dekh lenge. Chaand pe WiFi ke saath dekh lenge.
+* [Paise le lo: "Theek hai Netaji, deal."] #honesty:-15 #civic:-10 #why:Taking a bribe makes you part of the corruption, and gives the corrupt person power over you forever ("remember the ₹5,000?").
+    ~ earn(5000)
+    ~ took_bribe_netaji = 1
+    You: Theek hai Netaji... deal.
+    Netaji: Shabash! Samajhdaar bachcha. Hehe. Ab yeh jaanch band.
+    Your phone buzzes. Pintu: "Bhaiya maine sab dekh liya. Seriously??"
+* [Usse polite mana karo, aur yeh baat Officer Fernandes ko batao] #courage:+6 #civic:+4 #why:A bribe offer is itself evidence. Reporting it to the right authority (with details: when, where, how much) protects you and exposes the pattern.
+    You: Nahi Netaji. Aur aapne jo abhi offer kiya, woh main Officer Fernandes ko bataunga.
+    Netaji: Arre arre, mazaak kar raha tha! Mazaak! Hehe... hehe.
+-> END
+
+// ------------------------------------------------------------------------------------- convincing residents
+// Each conversation offers at most four choices: show evidence (opens a sub-menu), an honest appeal,
+// a dishonest shortcut (lie, threat or guilt-trip) and a repeatable "patient honesty" option, so a player
+// who started badly can always recover by being honest consistently.
+
+=== m4_sharma ===
+{trust("sharma") >= 60: Sharma Aunty: Main saath hoon! Building ke group mein bhi message daal diya hai. -> END}
+Sharma Aunty: Netaji ke khilaaf? Beta, hum shareef log hain. Hum kya kar sakte hain?
++ {(has("photo") and not shown_sharma_photo) or (has("receipt") and not shown_sharma_receipt)} [Saboot dikhao] -> m4_sharma_show
+* [Samjhao: "Shareef log chup rahenge, toh park kabhi theek nahi hoga."] #trust:+10 #civic:+2 #why:Good people staying silent is how small wrongs become normal. Speaking up within the law is part of being a good neighbour.
+    You: Shareef log chup rahenge, toh kaun bolega, Aunty? Hum kanoon ke andar, shanti se.
+* [Jhooth bolo: "Netaji ne building ka paani bhi band karwa diya hai!"] #trust:-20 #honesty:-10 #why:A lie might work for a minute. When people find out (and in a WhatsApp-group building, they will), they stop trusting you and your cause.
+    You: Aunty, Netaji ne toh building ka paani bhi band karwa diya!
+    Sharma Aunty: Kya? Paani toh subah aaya tha... Tum jhooth bol rahe ho? Phir baaki baatein bhi?
++ [Phir se, shanti se samjhao (sach ke saath)] #trust:+5 #why:Persuasion takes patience. Calmly repeating the facts, without pressure or exaggeration, slowly builds trust, even after a bad start.
+    You: Ek baar phir, seedhi baat: park ka paisa gaya kahan? Bas itna jaanna hai, shanti se aur kanoon ke saath.
+- -> m4_sharma_verdict
+
+=== m4_sharma_show ===
+* {has("photo") and not photo_fake} [Park ki photo dikhao] #trust:+15 #why:Showing, not telling: a photo lets people judge for themselves, which builds more trust than any speech.
+    ~ shown_sharma_photo = 1
+    You: Aunty, yeh dekhiye. Board kehta hai "complete", aur peeche park ki haalat.
+    Sharma Aunty: Haye! Yeh wahi jhoola hai jahan Pinky girti thi... ab toh toot gaya!
+* {has("photo") and photo_fake} [Park ki (edited) photo dikhao] #trust:-10 #honesty:-3 #why:People notice edits faster than you'd think. Once they spot one fake detail, they stop believing the true ones too.
+    ~ shown_sharma_photo = 1
+    You: Aunty, yeh dekhiye park ki photo!
+    Sharma Aunty: Yeh kachra... yeh toh kisi app se lagaya hua lagta hai. Meri beti bhi aise filter lagaati hai. Hmm.
+* {has("receipt")} [Golden dustbin wala bill dikhao] #trust:+15
+    ~ shown_sharma_receipt = 1
+    You: Aur yeh bill: 500 "golden" dustbin, ₹9.5 lakh!
+    Sharma Aunty: Paanch sau?! Mujhe toh do bhi nahi dikhte! Bechara mohalla.
+- -> m4_sharma_verdict
+
+=== m4_sharma_verdict ===
+{trust("sharma") >= 60: Sharma Aunty: Theek hai! Main aaungi. Aur apni kitty party bhi laaungi!|Sharma Aunty: Hmm... abhi pakka nahi hoon, beta.}
+-> END
+
+=== m4_raju ===
+{trust("raju") >= 60: Raju: Main saath hoon, bhai! Mere auto pe bhi poster lagega: "Hisaab do!" -> END}
+Raju: Netaji ka scam? Bhai, sab neta ek jaise hote hain. Kya farak padega?
++ {(has("photo") and not photo_fake and not shown_raju_photo) or (has("receipt") and not shown_raju_receipt) or (has("rti") and not shown_raju_rti)} [Saboot dikhao] -> m4_raju_show
+* [Samjhao: "Farak padta hai. Har vote, har awaaz se."] #trust:+10 #civic:+2 #why:Cynicism ("all leaders are the same") is what lets bad leaders stay. Showing that one honest action can matter is how you break it.
+    You: Farak padta hai, Raju bhai. Agar hum sab "kya farak padega" bolenge, toh kuch nahi badlega.
+* [Jhooth bolo: "Netaji ne tumhara auto permit cancel karwa diya hai!"] #trust:-20 #honesty:-10 #why:Lies may win a minute, but when people find out they stop trusting you, and the cause. Truth is slower but it lasts.
+    You: Raju bhai, Netaji ne tumhara auto permit cancel karwa diya hai!
+    Raju: Kya?! ...Ruko. Maine toh kal hi permit renew karwaya. Tum jhooth bol rahe ho, bhai.
++ [Phir se, shanti se samjhao (sach ke saath)] #trust:+5 #why:Persuasion takes patience. Calmly repeating the facts, without pressure or exaggeration, slowly builds trust, even after a bad start.
+    You: Ek baar phir, seedhi baat: park ka paisa gaya kahan? Bas itna jaanna hai, shanti se aur kanoon ke saath.
+- -> m4_raju_verdict
+
+=== m4_raju_show ===
+* {has("photo") and not photo_fake} [Park ki photo dikhao] #trust:+15
+    ~ shown_raju_photo = 1
+    You: Yeh dekho Raju bhai: board pe "complete", aur peeche kachra.
+    Raju: Arre! Mere bachche wahin khelte the. Yeh toh seedha dhokha hai!
+* {has("receipt")} [Golden dustbin ka bill dikhao] #trust:+15
+    ~ shown_raju_receipt = 1
+    You: Aur yeh bill: paanch sau golden dustbin!
+    Raju: Golden dustbin? Mere auto ki seat phati hai, aur inke dustbin sone ke? Waah!
+* {has("rti")} [RTI reply dikhao] #trust:+20
+    ~ shown_raju_rti = 1
+    You: Yeh RTI reply, sarkaari record: ₹10 lakh "kharch" ho gaye.
+    Raju: Sarkaari kaagaz pe likha hai? Phir toh pakka.
+- -> m4_raju_verdict
+
+=== m4_raju_verdict ===
+{trust("raju") >= 60: Raju: Theek hai! Main saath hoon. March mein auto se announcement bhi karunga!|Raju: Hmm. Aur saboot ho toh dikhana, bhai.}
+-> END
+
+=== m4_chacha ===
+{trust("chacha") >= 60: Chacha: Main saath hoon, bhatije. Ab har khabar pehle check karta hoon, phir forward! -> END}
+Chacha: Bhatije! Mere paas ek khabar hai: Netaji ne park ka paisa chaand pe WiFi lagane mein laga diya! WhatsApp pe aaya hai.
++ {(has("receipt") and not shown_chacha_receipt) or (has("rti") and not shown_chacha_rti)} [Saboot dikhao] -> m4_chacha_show
+* [Chacha, forward karne se pehle check karo. Asli baat yeh hai...] #trust:+10 #civic:+3 #why:Rumours and truth can sound the same. Gently explaining what is actually known, without mocking anyone, changes minds.
+    You: Chacha, WhatsApp ki baat chhodo. Asli baat yeh hai ki park ka paisa kahan gaya, uska hisaab koi nahi de raha.
+    Chacha: Hmm... asli saboot ho toh dikhana, phir maanunga.
+* [Haan Chacha, aur yeh bhi phaila do ki Netaji ke paas sone ka helicopter hai!] #trust:-10 #honesty:-10 #why:Fighting corruption with rumours makes you just another rumour-spreader. When the truth comes out, nobody can tell your real facts from the fake ones.
+    You: Haan Chacha! Aur yeh bhi phaila do ki unke paas sone ka helicopter hai!
+    Chacha: Sach mein?! ...Ruko, yeh tumne abhi banaya na? Bhatije, tum bhi?
++ [Phir se, shanti se samjhao (sach ke saath)] #trust:+5 #why:Persuasion takes patience. Calmly repeating the facts, without pressure or exaggeration, slowly builds trust, even after a bad start.
+    You: Ek baar phir, seedhi baat: park ka paisa gaya kahan? Bas itna jaanna hai, shanti se aur kanoon ke saath.
+- -> m4_chacha_verdict
+
+=== m4_chacha_show ===
+* {has("receipt")} [Golden dustbin ka bill dikhao] #trust:+15
+    ~ shown_chacha_receipt = 1
+    You: Chacha, yeh bill dekho: paanch sau golden dustbin.
+    Chacha: Haha! Golden dustbin! Yeh khabar toh meri chai se bhi garam hai!
+* {has("rti")} [RTI reply dikhao] #trust:+20
+    ~ shown_chacha_rti = 1
+    You: Yeh dekho, RTI reply. Sarkaar ka apna record.
+    Chacha: Sarkaari mohar! Ab yeh afwaah nahi, sach hai. Pehli baar meri khabar ka saboot hai!
+- -> m4_chacha_verdict
+
+=== m4_chacha_verdict ===
+{trust("chacha") >= 60: Chacha: Theek hai bhatije, main saath hoon. Aur march ki khabar main hi phailaunga, asli wali!|Chacha: Hmm... dekhte hain.}
+-> END
+
+=== m4_asha ===
+{trust("asha") >= 60: Asha Ma'am: Main saath hoon, {player_name}. School ke bachche bhi placards banane mein madad karenge. -> END}
+Asha Ma'am: Park ka scam? Main teacher hoon, {player_name}. Mujhe politics se door rehna chahiye...
++ {(has("photo") and not photo_fake and not shown_asha_photo) or (has("rti") and not shown_asha_rti)} [Saboot dikhao] -> m4_asha_show
+* [Samjhao: "Aapne hi sikhaya tha, mohalla bhi classroom hai."] #trust:+10 #civic:+2 #why:Reminding people of their own values is honest persuasion: you're not pushing, you're connecting the cause to what they already believe.
+    You: Ma'am, aapne hi kaha tha: mohalla bhi ek classroom hai. Bachche dekh rahe hain hum kya karte hain.
+    Asha Ma'am: ...Apni hi baat mujhe sikha rahe ho. Achha laga.
+* [Guilt-trip karo: "Aap darti ho, isliye mana kar rahi ho."] #trust:-10 #why:Shaming people into joining creates resentment, not commitment. Invite people; don't push them.
+    You: Aap bas darti ho, Ma'am. Isliye mana kar rahi ho.
+    Asha Ma'am: Mujhe darpok mat kaho, {player_name}. Mujhe sochne do.
++ [Phir se, shanti se samjhao (sach ke saath)] #trust:+5 #why:Persuasion takes patience. Calmly repeating the facts, without pressure or exaggeration, slowly builds trust, even after a bad start.
+    You: Ek baar phir, seedhi baat: park ka paisa gaya kahan? Bas itna jaanna hai, shanti se aur kanoon ke saath.
+- -> m4_asha_verdict
+
+=== m4_asha_show ===
+* {has("photo") and not photo_fake} [Park ki photo dikhao] #trust:+15
+    ~ shown_asha_photo = 1
+    You: Ma'am, yeh politics nahi, yeh park hai. Bachchon ka park. Dekhiye.
+    Asha Ma'am: Wahi swing jahan humne science class mein pendulum padhaya tha...
+* {has("rti")} [RTI reply dikhao] #trust:+15
+    ~ shown_asha_rti = 1
+    You: Aur yeh RTI reply. Sab sarkaari record mein hai.
+    Asha Ma'am: Tumne RTI file ki? Main bachchon ko civics mein yahi padhati hoon!
+- -> m4_asha_verdict
+
+=== m4_asha_verdict ===
+{trust("asha") >= 60: Asha Ma'am: Theek hai. Main saath hoon. Shanti se, sach ke saath.|Asha Ma'am: Thoda sochne do.}
+-> END
+
+=== m4_bunty ===
+{trust("bunty") >= 60: Bunty: Main aur meri cricket team, dono saath hain. Bas koi patthar nahi phenkega, promise! -> END}
+Bunty: Tu? Netaji ke khilaaf march? Mujhe kya lena-dena?
+* [Park tumhara cricket ground tha na? Dekho uski haalat.] #trust:+20 #why:People join causes that touch their own lives. Connecting the issue to what someone loves is honest persuasion, not manipulation.
+    You: Park tumhara cricket ground tha na? Ab wahan pitch nahi, kachra hai.
+    Bunty: ...Haan. Wahan main century maarne wala tha. Phir sab kachra ho gaya.
+* {m2_done and not m2_fought} [Yaad hai tumne Golu se maafi maangi thi? Woh himmat ki baat thi.] #trust:+20 #courage:+2 #why:Reminding someone of their own best moment helps them see who they can be. It works because it's true.
+    You: Tumne Golu se maafi maangi thi. Woh himmat ki baat thi. Yeh bhi wahi himmat hai.
+    Bunty: ...Tu sach mein ajeeb hai. Par achha ajeeb.
+* {m2_fought} [Sorry bolo: "Us din dhakka dena galat tha."] #trust:+25 #honesty:+3 #why:Apologising for your own mistakes, even to someone who wronged others, is how trust is rebuilt. It also shows the cause is bigger than old fights.
+    You: Bunty, us din tujhe dhakka diya tha. Woh galat tha. Sorry.
+    Bunty: ...Kisi bade ne pehli baar mujhse sorry bola hai.
+* [Dhamki do: "Nahi aaya toh Asha Ma'am ko phir se bataunga"] #trust:-15 #why:Threats get compliance at best, and make someone who was starting to change feel cornered again.
+    You: Nahi aaya toh Asha Ma'am ko bataunga.
+    Bunty: Haan wahi, sab yahi karte hain. Ja.
++ [Phir se, shanti se samjhao (sach ke saath)] #trust:+5 #why:Persuasion takes patience. Calmly repeating the facts, without pressure or exaggeration, slowly builds trust, even after a bad start.
+    You: Ek baar phir, seedhi baat: park ka paisa gaya kahan? Bas itna jaanna hai, shanti se aur kanoon ke saath.
+- {trust("bunty") >= 60: Bunty: Theek hai. Main aaunga. Placards main bhi pakdunga!|Bunty: Dekhta hoon...}
+-> END

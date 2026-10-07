@@ -1,0 +1,111 @@
+// ================================================================================================
+//  CHAPTER 3 · IMANDAR BAZAAR  ("The honest market")
+//  Giver: Sharma Aunty
+//  Teaches: return extra change, refuse "too good to be true" offers, don't bribe to skip queues.
+//
+//  Flow: m3_sharma (start, unlocks the bazaar) → m3_lala (groceries + extra change)
+//        → lucky_stall + ration_queue (world objects in the bazaar) → m3_sharma (deliver) → m3_done
+// ================================================================================================
+
+=== m3_sharma ===
+{m3_started: -> m3_deliver}
+Sharma Aunty: Beta {player_name}! Achha hua tum mil gaye. Mera ghutna dukh raha hai, aur ghar mein atta khatam.
+Sharma Aunty: Bazaar Gali kal hi khuli hai, road repair khatam hua. Mere liye Lala ji ki dukaan se saamaan le aaoge?
+Sharma Aunty: Aur Ration Office se mera naya ration card bhi le aana. Yeh lo ₹500, aur yeh list.
+* [Haan Aunty, abhi le aata hoon!] #civic:+3 #trust:+10 #why:Helping elderly neighbours is the everyday glue of a mohalla. People remember who showed up.
+    You: Haan Aunty, abhi le aata hoon!
+    Sharma Aunty: Jeete raho! Tumhari mummy ne sahi kaha tha.
+* [Delivery charge ₹50 lagega, Aunty.] #civic:-2 #trust:-10 #why:There's nothing wrong with earning money, but charging a neighbour for a small favour changes the relationship. Some things are worth more as kindness.
+    You: Delivery charge ₹50 lagega, Aunty. Business is business.
+    Sharma Aunty: Padosi se charge?! Hai bhagwan... achha theek hai, le aao pehle.
+- ~ earn(500)
+~ unlock("bazaar")
+~ m3_started = 1
+Sharma Aunty: List mein hai: 5 kilo atta, 1 kilo dal, haldi aur Parle-G. Total ₹420 hona chahiye. Hisaab dhyan se!
+-> END
+
+=== m3_deliver ===
+{not (m3_bought and m3_ration): Sharma Aunty: {not m3_bought: Lala ji ki dukaan Bazaar Gali mein hai, andar jaake left mein.|Ration card bhi lana hai beta, Ration Office se.}}
+{not (m3_bought and m3_ration): -> END}
+Sharma Aunty: Aa gaye! Atta, dal, haldi... aur Parle-G! Aur ration card bhi! Shabash.
+~ take("groceries")
+~ take("ration_card")
+Sharma Aunty: Ab bata, kitne paise bache? ₹500 diye the, ₹420 ka saamaan.
+* {m3_returned} [Yeh lo Aunty, ₹80. Lala ji ne pehle galti se zyada de diye the, maine wapas kar diye.] #honesty:+5 #trust:+15 #why:Being honest when nobody would ever find out is what integrity really means. And now Sharma Aunty will trust you with anything.
+    ~ pay(80)
+    You: Yeh lo Aunty, ₹80. Lala ji ne pehle ₹100 zyada de diye the, maine wapas kar diye.
+    Sharma Aunty: Sach mein? Aaj kal kaun karta hai aisa! Main poore building group mein bataungi!
+* {m3_kept} [Yeh lo Aunty, ₹80. (Extra ₹100 chup chaap jeb mein)] #honesty:-5 #why:Keeping money that isn't yours is still taking it, even if it was someone else's mistake. Lala ji will be ₹100 short at the end of the day.
+    ~ pay(80)
+    You: Yeh lo, ₹80.
+    Sharma Aunty: Shabash beta!
+    Your pocket feels a little heavier than it should.
+* [Kuch nahi bacha, Aunty. Sab lag gaya.] #honesty:-10 #trust:-15 #why:Lying to keep a little money can cost you a lot of trust. Sharma Aunty had the list and the prices, and she'll check.
+    You: Kuch nahi bacha, Aunty. Sab lag gaya.
+    Sharma Aunty: Sab? ₹420 ki list thi... Hmm. Theek hai beta. Theek hai.
+- ~ m3_done = 1
+Pintu: Breaking news: Meera Didi tumse milna chahti hain! Seva Clinic, Ward Office ke bagal mein. Kuch serious lag raha hai...
+-> END
+
+=== m3_lala ===
+Lala ji: Aao beta! Sharma ji ki list? 5 kilo atta, dal, haldi, Parle-G... total ₹420.
+You: Yeh lo, ₹500.
+~ pay(500)
+~ give("groceries")
+~ m3_bought = 1
+Lala ji is busy with three customers at once. He counts the change quickly and hands you ₹180.
+Lala ji: Yeh lo ₹180. Aur kuch?
+* [Lala ji, aapne ₹100 zyada de diye. Yeh lo wapas.] #honesty:+10 #trust:+15 #why:Returning extra change is honesty in its purest form: nobody saw, nobody would know. Small honesty builds the trust that big causes need.
+    ~ earn(80)
+    ~ m3_returned = 1
+    You: Lala ji, ₹420 ka saamaan tha. ₹80 bachne chahiye, aapne ₹180 diye.
+    Lala ji: Arre! Galti ho gayi! Itne saal mein pehli baar kisi ne wapas kiya... Tumhara naam yaad rakhunga, beta.
+* [Chupchaap rakh lo. Unki galti, mera fayda.] #honesty:-10 #why:A shopkeeper's mistake isn't your income. Small shops run on thin margins: ₹100 can be his whole day's profit.
+    ~ earn(180)
+    ~ m3_kept = 1
+    You: (Chupchaap) Thank you, Lala ji.
+    Lala ji: Aate rehna beta!
+-> END
+
+=== lucky_stall ===
+{m3_lucky: Lucky Bhai: Aao aao, phir se lucky banna hai? Nahi? Theek hai... -> END}
+A loud stall with flashing lights. A man in shiny sunglasses waves a phone around.
+Lucky Bhai: Lucky Draw! Lucky Draw! Sirf ₹99 ka coupon, aur jeeto iPhone, scooty, ya Goa trip! Har coupon pe inaam pakka!
+Lucky Bhai: Bas apna Aadhaar number aur OTP batao, inaam ghar pe aayega!
+* [Coupon le lo, aur OTP bhi bata do] #civic:-4 #honesty:-1 #why:"Guaranteed prize" + "share your OTP" = scam. Never share OTPs or ID numbers with strangers: they can be used to empty bank accounts.
+    ~ pay(99)
+    You: Theek hai, ek coupon! Mera OTP hai...
+    Pintu: BHAIYA RUKO! OTP kabhi kisi ko nahi! Yeh scam hai!
+    Lucky Bhai: Arre chhote, tu beech mein mat aa! ...Achha, ₹99 toh gaye, inaam baad mein aayega. Shayad.
+* [Mana karo, aur logon ko bhi warn karo] #civic:+4 #courage:+3 #why:Saying no protects you; warning others protects your whole mohalla. Scammers depend on people staying quiet.
+    You: Bhaiyon-behno, yeh scam hai! Koi OTP ya Aadhaar mat batana!
+    Lucky Bhai: Oye! Mera business kharab kar raha hai! ...Chalo, dukaan band.
+    The crowd murmurs. Two aunties put their phones back in their purses.
+* [Politely mana karo] #civic:+1 #honesty:+1 #why:If it sounds too good to be true, it usually is. Saying "no thanks" to a stranger's deal is always allowed.
+    You: Nahi bhaiya, thank you.
+    Lucky Bhai: Tumhari kismat, tumhara loss!
+- ~ m3_lucky = 1
+~ resolve()
+-> END
+
+=== ration_queue ===
+{m3_ration: The queue at the Ration Office is shorter now. You've already collected the card. -> END}
+{not m3_started: The Ration Office queue snakes around the corner. You have no work here right now. -> END}
+There's a long queue outside the Ration Office. A man in a striped shirt sidles up to you.
+Tout: Psst. Line mein do ghante lagenge. ₹50 do, peeche ke darwaze se seedha andar. Sab karte hain.
+* [₹50 de do, time bachao] #honesty:-8 #civic:-6 #why:Even a ₹50 bribe is a bribe. It makes the queue slower for everyone who can't or won't pay, and keeps the "back door" open for bigger corruption.
+    ~ pay(50)
+    You: Theek hai, yeh lo ₹50.
+    The tout leads you through a back door. An old man who has been waiting since morning watches you go in ahead of him.
+* [Line mein khade raho, apni baari ka wait karo] #civic:+5 #honesty:+3 #why:Queues are fairness in action: first come, first served, rich or poor. Waiting your turn protects everyone else's turn.
+    You: Nahi, main line mein hi rahunga.
+    You wait. And wait. Two hours later, the clerk hands you the card with a smile.
+    Clerk: Next! Arre, aap toh line mein the. Waise aaj kal log peeche se aate hain. Shukriya.
+* [Counter pe tout ki complaint karo] #courage:+5 #civic:+5 #why:Reporting touts and middlemen is how offices get cleaned up. The officers at the counter can't fix what nobody reports.
+    You: Excuse me, bahar ek aadmi paise leke line skip karwa raha hai.
+    Clerk: Kya?! Guard, bahar dekho! ...Shukriya. Aap line mein aaiye, aapka kaam main khud dekhunga.
+    The tout vanishes. The queue claps, a little awkwardly.
+- ~ give("ration_card")
+~ m3_ration = 1
+~ resolve()
+-> END
