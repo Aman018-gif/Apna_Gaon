@@ -1,0 +1,93 @@
+// ================================================================================================
+//  CHAPTER 5 · SHANTI MARCH  ("Peaceful march")
+//  Giver: Meera Didi
+//  Teaches: peaceful protest: placards, slogans, candle march, petition through the proper office.
+//  Violence or vandalism (#violence) costs 25 rating points each and weakens the petition.
+//
+//  Flow: placard_table (slogan mini-game ×3) → m5_meera (gather at the park, speech)
+//        → candle march along the diyas (ProtestManager, march_incident on the way)
+//        → m5_fernandes (petition) → m5_done, Mela Maidan opens
+// ================================================================================================
+
+=== m5_meera ===
+{placards < 3: -> m5_meera_placards}
+{not m5_gathered: -> m5_meera_gather}
+{march_checkpoints < 4: Meera Didi: Diyon ke raaste chalo, Ward Office tak. Sab tumhare peeche hain! -> END}
+Meera Didi: Officer Fernandes ko petition do. Hum yahin hain.
+-> END
+
+=== m5_meera_placards ===
+Meera Didi: Pehle placards! Community Hall ke bahar table pe chart paper aur rang rakhe hain. Neeche, party offices ke south mein.
+Meera Didi: Naare aise hon jo sach bolein, hasaayein bhi, par dhamkaayein nahi. ({placards}/3 ready)
+-> END
+
+=== m5_meera_gather ===
+Meera Didi: Teen placards! Waah. Ab sabko Gulmohar Park bulaate hain. Shaam ho rahi hai, diye jalayenge.
+* [Chalo, sabko bulao. March shuru karte hain!]
+    You: Chalo, sabko bulao. March shuru karte hain!
+* [Ek minute, thoda tayyar ho jaun.]
+    Meera Didi: Theek hai. Jab ready ho, mujhse baat karna.
+    -> END
+- ~ protest("gather")
+~ give("petition")
+The sun sets over Gulmohar Park. One by one, your neighbours arrive with diyas in their hands. {joined()} of them joined because you convinced them, and they brought their families.
+Meera Didi: Sab aa gaye! Petition pe sabke signature ho gaye. {player_name}, march se pehle do shabd bolo.
+* [Facts ke saath: "Humare paas photo, bill aur RTI hai. Hum shanti se hisaab maangenge."] #civic:+5 #courage:+5 #why:Leaders who stick to verified facts and peaceful methods keep the moral high ground, and the media, the officials and fence-sitters notice.
+    You: Humare paas photo hai, bill hai, aur sarkaar ka apna RTI reply hai. Hum kisi ke ghar nahi jaa rahe; hum Ward Office jaa rahe hain, hisaab maangne. Shanti se!
+    Crowd: Hisaab do! Hisaab do!
+* [Josh mein: "Chalo, Netaji ka ghar gher lete hain!"] #civic:-5 #courage:+1 #why:Surrounding someone's home is intimidation, not protest. It turns a fight against corruption into a fight against a person, and gives them an easy way to play victim.
+    You: Chalo, Netaji ka ghar gher lete hain! Dikhate hain kaun hai boss!
+    Meera Didi: Nahi! Hum kisi ke ghar nahi jaate. Hum Ward Office jaate hain, petition dete hain. Yahi hamara raasta hai.
+    The crowd murmurs uneasily, then nods along with Meera Didi.
+* [Hasaate hue: "Netaji ne chaand pe WiFi diya, hum zameen pe bench maangte hain!"] #courage:+4 #civic:+3 #why:Humour disarms fear and anger. Peaceful movements around the world have used jokes and satire to make people listen.
+    You: Netaji ne chaand pe WiFi ka vaada kiya. Hum bas zameen pe ek bench maangte hain!
+    The crowd laughs. Even Bunty grins. Pintu films it for his "good memes only" page.
+- Meera Didi: Diyon ke raaste chalo: Main Road, phir Gali No. 2, phir Ward Office. Sab tumhare peeche!
+~ m5_gathered = 1
+~ protest("march")
+-> END
+
+=== march_incident ===
+Near the posters of Netaji on the wall of Gali No. 2, a young man from the crowd picks up a stone.
+Angry man: Bas bahut ho gaya shanti-shanti! Netaji ke posters phaado! Uske office pe patthar maaro!
+Some people in the crowd start shouting along. The diyas flicker.
+* [Shanti se roko: "Patthar neeche rakho. Humari takat sach hai, patthar nahi."] #courage:+8 #civic:+5 #why:Stopping violence inside your own group takes more courage than shouting at the other side. One stone could have turned "citizens with evidence" into "rioters" in tomorrow's news.
+    You: Bhai, patthar neeche rakho. Humari takat sach hai, patthar nahi. Ek patthar chala, toh kal ki news mein hum goonde honge aur Netaji hero.
+    Angry man: ...Theek hai. Theek hai. Sorry.
+    Meera Didi: (quietly) Shabash.
+* [Unke saath milke posters phaado aur patthar maaro] #violence #civic:-15 #courage:-3 #honesty:-3 #why:Vandalism and violence are crimes, even for a good cause. They hurt people, give the corrupt an excuse ("see, troublemakers!") and drive away supporters.
+    You tear down a poster. Someone throws a stone. Glass shatters at the party office. Somebody screams.
+    Police whistles. Half the crowd runs. Raju's auto has a cracked windshield. Netaji appears on TV that night: "Dekho, yeh hai inka 'shanti march'!"
+    Meera Didi: (shaken) Humne kya kiya, {player_name}? Humara sach ab kamzor ho gaya.
+* [Kuch mat karo, aage chalte raho] #courage:-3 #why:When something goes wrong in your group, staying silent is also a choice. Here, luckily, others stepped in; next time, it could be you who needs to.
+    You keep walking and pretend not to see.
+    Behind you, Asha Ma'am steps in and calms the man down. The stone drops. Close call.
+- The march goes on, quieter now, the diyas flickering in the evening breeze.
+-> END
+
+=== m5_fernandes ===
+Officer Fernandes stands at the Ward Office door, looking at the sea of diyas.
+Officer Fernandes: Itne log? Raat ke waqt? {violence > 0: Aur mujhe khabar mili hai ki raaste mein tod-phod hui. Yeh theek nahi hua.|Aur poori tarah shanti se. Mujhe aise hi nagrikon ki zaroorat hai.}
+* [Petition do: saboot, signatures, aur saaf maang] #civic:+5 #why:A petition is a formal request to an authority. With evidence and signatures attached, the officer is obliged to act on it, and you have a paper trail if they don't.
+    ~ take("petition")
+    You: Officer, yeh petition hai: park ki photo, golden dustbin ka bill, RTI reply, aur {joined()} parivaaron ke signatures. Hum chahte hain park theek ho aur ₹10 lakh ki jaanch ho.
+    Officer Fernandes: Proper format. Proper saboot. Main aaj hi inquiry order karti hoon.
+* [Maang karo: "Netaji ko abhi giraftaar karo!"] #civic:-2 #why:Officers can investigate; only courts can punish. Demanding instant punishment skips the fair process that also protects innocent people.
+    ~ take("petition")
+    You: Netaji ko abhi giraftaar karo!
+    Officer Fernandes: Giraftaari courts aur police ka kaam hai, mera nahi. Main inquiry order kar sakti hoon, aur karungi. Yeh petition dijiye.
+- {violence > 0: Officer Fernandes: Tod-phod ki bhi alag inquiry hogi. Shanti ke bina, sach bhi shak ke ghere mein aa jata hai.}
+Officer Fernandes: Aur ek khabar: agle hafte Ward 7 ka chunav hai. Election Mela kal se Mela Maidan pe! Wahan milte hain.
+~ unlock("maidan")
+~ m5_done = 1
+Pintu: CHAPTER COMPLETE! "Shanti March". Ab Election Mela! Maidan khul gaya hai: south-east corner!
+-> END
+
+=== placard_table ===
+{not m5_started: A long table outside the Community Hall, with chart paper, sketch pens and glitter. A sign says: "Hall booking ₹200/day". -> END}
+{placards >= 3: Teen placards ready hain! Ab Meera Didi se milo. -> END}
+Chart paper, sketch pens, glitter. Placards banane ka time! ({placards}/3)
++ [Placards banao (slogan mini-game)]
+    ~ minigame("slogan")
++ [Baad mein]
+-> END

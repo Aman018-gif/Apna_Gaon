@@ -1,0 +1,191 @@
+// ================================================================================================
+//  CHAPTER 6 · ELECTION MELA  (finale)
+//  Giver: Officer Fernandes (Ward & Election Officer)
+//  Teaches: know your candidates, check facts, refuse bribes, inform (don't pressure) voters, vote in secret.
+//  The ending depends on the Mohalla Rating and on how many voters you informed.
+//
+//  Flow: m6_fernandes (rules, voter slip) → stalls (stall_jugaad / stall_vaada / stall_meera)
+//        → nukkad_stage (street play) → m6_chacha (fake-news mini-game) → voter_door ×5
+//        → booth (EVM + ink on the finger) → ending
+// ================================================================================================
+
+=== m6_fernandes ===
+{m6_started: -> m6_fernandes_tips}
+Officer Fernandes: {player_name}! Aapki petition ka asar hua: park ki inquiry shuru ho gayi hai. Aur ab... chunav!
+Officer Fernandes: Ward 7 ke teen ummeedwar: Netaji Jugaad Singh (Rocket), Dr. Vaada Verma (See-saw), aur Meera Didi (Lantern), independent.
+Officer Fernandes: Rules simple hain. Vote secret hai. Rishwat lena aur dena, dono crime hain. Aur ID saath laana.
+* [Main teeno ke baare mein jaankar hi vote dunga.] #civic:+3 #why:Comparing candidates on their record and their plans (not their posters, songs or gifts) is the core of an informed vote.
+    You: Main teeno stalls dekhunga, sawaal poochunga, phir faisla karunga.
+    Officer Fernandes: Bilkul sahi. Aur haan, doosron ko bhi jaankari dena. Dabaav nahi, jaankari.
+* [Mujhe pata hai kisko dena hai. Stalls dekhne ki kya zaroorat?] #civic:-1 #why:Even if you already have a favourite, listening to everyone protects you from blind spots, and lets you explain your choice to others honestly.
+    You: Mujhe pehle se pata hai kisko vote dena hai.
+    Officer Fernandes: Ho sakta hai. Par sawaal poochne mein kya harz hai? Ek baar sabko sun lijiye.
+- ~ give("voter_slip")
+~ m6_started = 1
+Officer Fernandes: Yeh aapki voter slip. Mela mein ghoomiye: stalls, nukkad natak, aur Chacha ki "khabron" ki dukaan. Booth Maidan ke right-bottom mein hai.
+Pintu: Aur blue jhande wale ghar! Wahan knock karke logon ko sahi jaankari do. Kam se kam 5!
+-> END
+
+=== m6_fernandes_tips ===
+Officer Fernandes: {~Booth subah 7 se shaam 6 tak khula hai. Game mein jab chaaho.|Koi rishwat de, toh mujhe batao. Election Commission ka complaint app bhi hai.|Vote secret hai. Kisi ko batane ki zaroorat nahi kisko diya.|EVM pe NOTA bhi hota hai: "None of the Above". Woh bhi aapka haq hai.}
+{bribe_reported: Officer Fernandes: Aur thank you, us party worker ki report ke liye. Uspe action liya gaya hai.}
+-> END
+
+// ------------------------------------------------------------------------------------- stalls
+
+=== stall_jugaad ===
+{seen_jugaad: -> jugaad_menu}
+~ seen_jugaad = 1
+~ stalls_visited += 1
+Loud music. A giant cut-out of Netaji riding a rocket to the Moon. Free samosas. Very loud speakers.
+Netaji: Aaiye aaiye! Rocket pe button dabaiye! Mera manifesto: chaand pe free WiFi, har ghar helipad, aur Shanti Nagar mein samundar!
+-> jugaad_menu
+
+=== jugaad_menu ===
++ {not bribe_refused and not bribe_taken} [Party worker ka "gift" dekho]
+    -> jugaad_bribe
+* [Poocho: "Park ke ₹10 lakh ka kya hua?"] #courage:+3 #why:Asking a candidate about their record, in public, is exactly what elections are for. A good candidate welcomes the question.
+    You: Netaji, park ke ₹10 lakh ka kya hua? RTI mein "complete" likha hai.
+    Netaji: Park? Park toh cosmic level pe renovate hua hai. Aankhon se nahi, dil se dikhta hai! Next question!
+* [Poocho: "Chaand pe WiFi kaise lagega?"]
+    You: Chaand pe WiFi kaise lagega?
+    Netaji: Bahut lambi wire se! Hehe. Details baad mein, vote pehle.
++ [Aage badho]
+-> END
+
+=== jugaad_bribe ===
+A party worker leans in with an envelope and a shiny new pressure cooker.
+Party worker: Bhaiya, ₹500 aur yeh pressure cooker. Bas Rocket pe button dabana hai. Kisi ko pata nahi chalega.
+* [Mana karo: "Mera vote bikta nahi."] #honesty:+8 #courage:+4 #why:A vote sold for ₹500 is worth about 27 paise a day over five years. Saying no keeps your vote, and your voice, yours.
+    You: Mera vote bikta nahi, bhaiya. Cooker aap hi rakho.
+    Party worker: Arre, pressure cooker hai! Seeti bhi bajta hai! ...Theek hai, theek hai.
+    ~ bribe_refused = 1
+* [Le lo: "Paise le leta hoon, vote toh secret hai"] #honesty:-15 #civic:-8 #why:Accepting money or gifts for your vote is a crime under election law, for the giver and the taker. Even if you vote differently, you've told corrupt candidates that votes can be bought.
+    ~ earn(500)
+    ~ bribe_taken = 1
+    You: Theek hai, de do. Vote toh secret hai, kisko dunga kise pata.
+    Party worker: Smart! Hehe. Rocket yaad rakhna!
+    The pressure cooker feels heavier than it should.
+* [Officer Fernandes ko report karo] #civic:+8 #courage:+6 #why:Vote-buying thrives because people stay quiet. Reporting it to the Election Officer (or on the Election Commission's complaint app) gets it stopped, for everyone.
+    You: Main yeh Officer Fernandes ko bata raha hoon. Abhi.
+    Party worker: Arre arre! Galti ho gayi! Main toh... samosa baant raha tha!
+    Officer Fernandes arrives two minutes later and confiscates the envelope. The cooker goes into the "evidence" pile.
+    ~ bribe_reported = 1
+    ~ bribe_refused = 1
+-> END
+
+=== stall_vaada ===
+{seen_vaada: -> vaada_menu}
+~ seen_vaada = 1
+~ stalls_visited += 1
+A stall with two identical banners: one says "HAAN", the other says "NAHI". Dr. Vaada Verma stands exactly in between.
+Dr. Vaada: Swagat hai! Mera chunav chinh: See-saw. Kyunki main har mudde pe... balance rakhta hoon.
+-> vaada_menu
+
+=== vaada_menu ===
+* [Poocho: "Park ke liye kya karoge?"]
+    You: Doctor saab, park ke liye kya karoge?
+    Dr. Vaada: Park banayenge! Bilkul! ...Ya parking? Aap kya chahte ho? Haan, wahi. Bilkul wahi.
+* [Likhit vaada maango] #courage:+2 #why:Written, specific promises can be checked later. Vague promises ("development!", "change!") can never be broken, because they never meant anything.
+    You: Doctor saab, ek likhit vaada dijiye: park kab tak theek hoga?
+    Dr. Vaada: Zaroor! ...Yeh lijiye. Aur yeh bhi lijiye.
+    He hands you two papers. One says "Park in 6 months". The other says "Parking in 6 months".
+* [Seedha bolo: "Ek baat pe tikiye, Doctor saab!"] #courage:+3
+    You: Ek baat pe tikiye, Doctor saab! Park ya parking?
+    Dr. Vaada: ...Aap bahut mushkil sawaal poochte ho. Main sochkar batata hoon. Shayad kal. Shayad nahi.
++ [Aage badho]
+-> END
+
+=== stall_meera ===
+{seen_meera: -> meera_menu}
+~ seen_meera = 1
+~ stalls_visited += 1
+A small, quiet stall with a lantern painted on a plain board, and a printed list taped to the table.
+Meera Didi: Aao, {player_name}. Mere vaade yahan likhe hain. Har ek ke saath kharcha aur deadline.
+Meera Didi: Park: inquiry ke baad 3 mahine mein. Har mahine public meeting. Ward ka budget notice board pe. Clinic mein free checkup.
+-> meera_menu
+
+=== meera_menu ===
+* [Poocho: "Paisa kahan se aayega?"] #civic:+2
+    You: Yeh sab ka paisa kahan se aayega?
+    Meera Didi: Park ka ₹10 lakh pehle se sanctioned hai, inquiry se wapas aayega. Baaki ward fund se, aur har rupaya notice board pe dikhega.
+* [Poocho: "Aap rishwat nahi lengi, iski kya guarantee?"] #courage:+2 #why:Even candidates you like deserve hard questions. Trust in leaders should come from transparency, not just good feelings.
+    You: Aap rishwat nahi lengi, iski kya guarantee?
+    Meera Didi: Guarantee koi nahi deta. Par meri property ki list online hai, aur har saal update karungi. Check karte rehna. Yahi tumhara kaam hai.
+* [Poocho: "Kya main logon ko aapko vote dene ko kahun?"] #honesty:+2 #why:Good candidates want informed voters, not pressured ones. Share facts; let people decide.
+    You: Kya main logon ko aapko vote dene ko kahun?
+    Meera Didi: Nahi! Unhe sahi jaankari do: sabka record, sabke vaade. Vote unka faisla hai. Agar main achhi hoon, toh woh khud dekh lenge.
++ [Aage badho]
+-> END
+
+// ------------------------------------------------------------------------------------- street play
+
+=== nukkad_stage ===
+{not m6_started: The stage is being set up. A banner says: "Nukkad Natak: Vote ka Mol (coming soon)". -> END}
+{mela_play: The actors are on a chai break. "Show khatam, par sawaal zinda hai!" -> END}
+A drum rolls. A small crowd gathers in a circle around the stage.
+Sutradhar: Suniye suniye! Aaj ka natak: "Vote ka Mol"!
+Actor Ramu: Mujhe ek neta ne ₹500 diye, vote ke liye. Main toh khush!
+Sutradhar: Aur phir... paanch saal baad!
+Actor Ramu: Sadak mein gaddhe. Nal mein paani nahi. School ki chhat tapakti hai. Hospital mein doctor nahi.
+Sutradhar: Ramu bhai, ₹500 ko paanch saal se divide karo. Ek din ka kitna hua?
+Actor Ramu: Ek din ka... 27 paise?! Mera vote 27 paise mein bika?!
+Sutradhar: Ab sawaal audience se! Natak ka sabak kya hai?
+* [Vote ki keemat paison se nahi naapi ja sakti.] #civic:+4 #honesty:+2 #why:Your vote decides who controls budgets worth crores for five years. No gift can be worth more than that.
+    You: Vote ki keemat paison se nahi naapi ja sakti!
+    Sutradhar: Sahi jawab! Taaliyaan!
+* [Neta se kaam ka hisaab maango, gift nahi.] #civic:+4 #courage:+2 #why:Accountability means asking "what did you do with the power we gave you?", in meetings, through RTI and at the ballot box.
+    You: Neta se gift nahi, kaam ka hisaab maango!
+    Sutradhar: Ekdum sahi! Hisaab do, hisaab do!
+* [Ramu ko zyada paise maangne chahiye the!] #civic:-3 #honesty:-3 #why:The joke lands, but the lesson doesn't. Whatever the price, a sold vote means the buyer owes you nothing afterwards.
+    You: Ramu ko zyada paise maangne chahiye the!
+    Sutradhar: Hahaha! Galat jawab, par mazedaar. Ramu, ek crore bhi le leta, paanch saal ke gaddhe kaun bharta?
+- ~ mela_play = 1
+Sutradhar: Natak khatam! Yaad rakhiye: mera vote, meri awaaz!
+-> END
+
+// ------------------------------------------------------------------------------------- fact-check
+
+=== m6_chacha ===
+{rumours_checked: Chacha: Ab main "Fact-Check Chacha" hoon! Har khabar pehle check, phir forward. Chai bhi fresh, khabar bhi fresh! -> END}
+Chacha: Bhatije! Mela special: mere paas aaj ki sabse garam khabrein hain. Sab WhatsApp se!
+* [Chalo Chacha, ek ek khabar fact-check karte hain] #civic:+2 #why:Rumours spread fastest just before elections. Checking the source, the date and who benefits takes 30 seconds and can stop a lie reaching hundreds of people.
+    You: Chalo Chacha, ek ek khabar ko check karte hain: kahan se aayi, kisne bheji, saboot kya hai.
+    ~ minigame("fakenews")
+* [Sab forward kar do, logon ko maza aayega!] #civic:-5 #honesty:-5 #why:Forwarding unchecked news makes you part of the rumour chain. Election rumours can change votes, and even start fights.
+    You: Sab forward kar do, Chacha! Maza aayega!
+    Chacha: Arre nahi beta, Pintu ne bola tha pehle check karna. Chalo, saath mein check karte hain.
+    ~ minigame("fakenews")
+-> END
+
+// ------------------------------------------------------------------------------------- door to door
+
+=== voter_door ===
+{not m6_started: {~Darwaza band hai. Andar TV pe cricket chal raha hai.|Ghar pe koi nahi lagta.|Andar se pressure cooker ki seeti aa rahi hai.} -> END}
+Knock knock. {~Ek uncle|Ek aunty|Ek college student|Ek dadi ji} darwaza kholte hain.
+Resident: {~Haan beta? Chunav ke baare mein? Sach kahun, samajh nahi aata kisko dein.|Vote? Mera naam list mein hai bhi ya nahi, pata nahi.|Chhutti ka din hai, vote dene jaane ka mann nahi.|Sab neta ek jaise hain, kya farak padta hai?}
++ [Sahi jaankari do: date, booth, ID, aur teeno ka record] #civic:+3 #honesty:+2 #why:Informed voters make better choices, and turnout rises when people know where, when and how to vote. Facts empower; the decision stays theirs.
+    You: Ravivaar, subah 7 se shaam 6, Maidan ka booth. ID le jaana. Aur yeh teeno candidates ka record dekhiye: RTI reply, vaade, sab. Faisla aapka.
+    Resident: Achha! Itni saaf baat pehli baar kisi ne bataayi. Zaroor jaunga.
+    ~ voters_informed += 1
++ [Dabaav daalo: "Meera Didi ko hi vote dena, warna..."] #civic:-3 #honesty:-2 #why:Pressuring voters, even for a good candidate, breaks the secret, free vote that democracy depends on. Inform; never intimidate.
+    You: Meera Didi ko hi vote dena. Warna dekh lena.
+    Resident: Dhamki? Main apna vote khud tay karunga. Nikliye.
++ [Afwaah phailao: "Netaji jeete toh sabke ghar tod denge!"] #honesty:-8 #civic:-3 #why:Scaring voters with lies is how rumours win elections. Even against a bad candidate, use the truth: in this case, the truth is bad enough.
+    You: Netaji jeete toh sabke ghar tod denge!
+    Resident: Haaye! ...Sach mein? Kahan likha hai? Tum bhi Chacha jaisi baatein karte ho.
+- ~ resolve()
+-> END
+
+// ------------------------------------------------------------------------------------- the vote
+
+=== booth ===
+{not m6_started: The polling booth tent is still being set up. -> END}
+{m6_done: Aapka vote ho chuka hai. Ungli pe syahi chamak rahi hai! -> END}
+Officer Fernandes: Booth No. 1. Voter slip aur ID dikhaiye.
+{voters_informed < 5 or stalls_visited < 3: Pintu: Bhaiya, ruko! Abhi kaam baaki hai: {voters_informed}/5 voters informed, {stalls_visited}/3 stalls. Vote ke baad Mela khatam!}
++ [Vote daalo]
+    Officer Fernandes: Andar jaaiye. Yaad rakhiye: aapka vote secret hai. Koi nahi dekhega, koi nahi poochega.
+    ~ vote()
++ [Abhi nahi]
+-> END
